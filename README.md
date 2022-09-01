@@ -13,7 +13,6 @@ All project documents are in the [Project Wiki](../../wiki/Home)
 - [Requirements](../../wiki/Requirements)
 - [Project Plan](../../wiki/Development%20Plan)
 - [Iteration 1 Plan](../../wiki/Iteration%201%20Plan) and [Task Board](https://github.com/users/Supakrit65/projects/4/views/1?layout=board) 
-(TODO - valihttps://github.com/users/Supakrit65/projects/4/views/1?layout=boardd link to task board)
 
 
 [django-tutorial]: https://docs.djangoproject.com/en/4.1/intro/tutorial01/
