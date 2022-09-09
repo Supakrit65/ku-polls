@@ -1,4 +1,4 @@
-## Online Polls for Kasetsart University
+# Online Polls for Kasetsart University
 An application for conducting a poll or survey, written in Python using Django. It is based on the [Django Tutorial project][django-tutorial],
 with additional functionality. <br>
 This application is part of the [Individual Software Process](https://cpske.github.io/ISP) course at [Kasetsart University](https://ku.ac.th).
