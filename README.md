@@ -6,7 +6,7 @@ This application is part of the [Individual Software Process](https://cpske.gith
 ## How to Install and Run
 To be Done.
 
-## Project Documents
+## [Project Documents](https://github.com/Supakrit65/ku-polls/wiki)
 All project documents are in the [Project Wiki](../../wiki/Home)
 
 - [Vision Statement](../../wiki/Vision%20Statement)
