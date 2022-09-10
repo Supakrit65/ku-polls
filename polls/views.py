@@ -16,7 +16,7 @@ class IndexView(generic.ListView):
         published in the future).
         """
         return Question.objects.filter(
-            pub_date__lte=timezone.now()
+            pub_date__lte=timezone.localtime()
         ).order_by('-pub_date')[:5]
 
 
@@ -28,7 +28,7 @@ class DetailView(generic.DetailView):
         """
         Excludes any questions that aren't published yet.
         """
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        return Question.objects.filter(pub_date__lte=timezone.localtime())
 
 
 class ResultsView(generic.DetailView):
