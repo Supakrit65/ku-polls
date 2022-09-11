@@ -3,6 +3,8 @@
 
 <h1>{{ question.question_text }}</h1>
 
+<meta charset="UTF-8">
+
 <ul>
 {% for choice in question.choice_set.all %}
     <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
@@ -10,3 +12,10 @@
 </ul>
 
 <a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+
+{% if messages %}
+<div class="message">
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}</div>
+{% endif %}
