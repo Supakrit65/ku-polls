@@ -80,7 +80,7 @@ class QuestionModelTests(TestCase):
         # end date pasted by 1 sec
         ended_question = create_question(question_text="Ended question.", days=-1, seconds=-1, end_in=1)
         self.assertIs(ended_question.can_vote(), False)
-    
+
     def test_can_vote_when_now_equal_to_end_date(self):
         """
         can_vote() return True for question whose end_date
@@ -107,6 +107,13 @@ class QuestionModelTests(TestCase):
         time = timezone.localtime() - datetime.timedelta(days=1, seconds=1)
         old_question = Question(pub_date=time)
         self.assertIs(old_question.can_vote(), True)
+
+    def test_can_vote_published_date(self):
+        """
+        can vote() return True for published now question.
+        """
+        question = Question(pub_date=timezone.localtime())
+        self.assertIs(question.can_vote(), True)
 
 
 class QuestionIndexViewTests(TestCase):
@@ -171,19 +178,19 @@ class QuestionDetailViewTests(TestCase):
     def test_future_question(self):
         """
         The detail view of a question with a pub_date in the future
-        returns a 404 not found.
+        returns a 302 redirect to index view.
         """
         future_question = create_question(question_text='Future question.', days=5)
         url = reverse('polls:detail', args=(future_question.id,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     def test_past_question(self):
         """
         The detail view of a question with a pub_date in the past
         displays the question's text.
         """
-        past_question = create_question(question_text='Past Question.', days=-5)
+        past_question = create_question(question_text='Past Question.', days=-5, end_in=10)
         url = reverse('polls:detail', args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
