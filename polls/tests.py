@@ -1,9 +1,19 @@
 import datetime
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils import timezone
 
 from .models import Question
+
+
+def create_question(question_text, days):
+    """
+    Create a question with the given `question_text` and published the
+    given number of `days` offset to now (negative for questions published
+    in the past, positive for questions that have yet to be published).
+    """
+    time = timezone.now() + datetime.timedelta(days=days)
+    return Question.objects.create(question_text=question_text, pub_date=time)
 
 
 class QuestionModelTests(TestCase):
@@ -34,16 +44,6 @@ class QuestionModelTests(TestCase):
         time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
         recent_question = Question(pub_date=time)
         self.assertIs(recent_question.was_published_recently(), True)
-
-
-def create_question(question_text, days):
-    """
-    Create a question with the given `question_text` and published the
-    given number of `days` offset to now (negative for questions published
-    in the past, positive for questions that have yet to be published).
-    """
-    time = timezone.now() + datetime.timedelta(days=days)
-    return Question.objects.create(question_text=question_text, pub_date=time)
 
 
 class QuestionIndexViewTests(TestCase):
@@ -124,3 +124,29 @@ class QuestionDetailViewTests(TestCase):
         url = reverse('polls:detail', args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+
+class QuestionResultViewTests(TestCase):
+    def test_vote_count_display_correctly(self):
+        """
+        The ResultView should display the vote count of question correctly.
+        """
+        question = create_question(question_text='Some interesting question.', days=-2)
+        question.choice_set.create(choice_text="5/5", votes=0)
+        choice = question.choice_set.get(pk=1)
+        choice.votes += 2
+        question.save()
+        choice.save()
+        url = reverse("polls:results", args=(question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, choice.votes)
+
+    def test_future_question(self):
+        """
+        The result view of a question with a pub_date in the future
+        returns a 404 not found.
+        """
+        future_question = create_question(question_text='Future question.', days=5)
+        url = reverse('polls:results', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
