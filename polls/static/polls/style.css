@@ -2,6 +2,14 @@ li a {
     color: green;
 }
 
+.header {
+  padding: 8px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+  font-size: 15px;
+}
+
 body {
     background: white url("images/background.png") no-repeat;
     background-size: cover;
@@ -10,4 +18,15 @@ body {
 button {
     background-color:#0a0a23;
     color: #fff;
+    border:none;
+    border-radius:15px;
 }
+
+input {
+    background-color:#0a0a23;
+    color: #fff;
+    border:none;
+    border-radius:15px;
+}
+
+tab { text-indent:10px }
