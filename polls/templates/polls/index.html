@@ -3,6 +3,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -16,7 +17,10 @@
     {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
+        <p>
         <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+        <td><a href="{% url 'polls:results' question.id %}"><button type="button" class="button">{{"Results"}}</button></a></td>
+        </p>
     {% endfor %}
     </ul>
     {% else %}
