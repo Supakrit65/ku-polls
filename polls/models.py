@@ -30,7 +30,7 @@ class Question(models.Model):
         now = timezone.localtime()
         if not self.end_date:
             return self.is_published()
-        return self.is_published and now <= self.end_date
+        return self.is_published() and now <= self.end_date
 
 
 class Choice(models.Model):

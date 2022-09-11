@@ -6,14 +6,15 @@ from django.utils import timezone
 from .models import Question
 
 
-def create_question(question_text, days):
+def create_question(question_text, days, seconds=0, end_in=0):
     """
     Create a question with the given `question_text` and published the
     given number of `days` offset to now (negative for questions published
     in the past, positive for questions that have yet to be published).
     """
-    time = timezone.now() + datetime.timedelta(days=days)
-    return Question.objects.create(question_text=question_text, pub_date=time)
+    time = timezone.localtime() + datetime.timedelta(days=days, seconds=seconds)
+    return Question.objects.create(question_text=question_text, pub_date=time,
+                                   end_date=time + datetime.timedelta(days=end_in))
 
 
 class QuestionModelTests(TestCase):
@@ -23,8 +24,7 @@ class QuestionModelTests(TestCase):
         was_published_recently() returns False for questions whose pub_date
         is in the future.
         """
-        time = timezone.now() + datetime.timedelta(days=30)
-        future_question = Question(pub_date=time)
+        future_question = create_question(question_text="Future question.", days=30)
         self.assertIs(future_question.was_published_recently(), False)
 
     def test_was_published_recently_with_old_question(self):
@@ -32,7 +32,7 @@ class QuestionModelTests(TestCase):
         was_published_recently() returns False for questions whose pub_date
         is older than 1 day.
         """
-        time = timezone.now() - datetime.timedelta(days=1, seconds=1)
+        time = timezone.localtime() - datetime.timedelta(days=1, seconds=1)
         old_question = Question(pub_date=time)
         self.assertIs(old_question.was_published_recently(), False)
 
@@ -41,9 +41,72 @@ class QuestionModelTests(TestCase):
         was_published_recently() returns True for questions whose pub_date
         is within the last day.
         """
-        time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
+        time = timezone.localtime() - datetime.timedelta(hours=23, minutes=59, seconds=59)
         recent_question = Question(pub_date=time)
         self.assertIs(recent_question.was_published_recently(), True)
+
+    def test_is_published_with_future_question(self):
+        """
+        is_published() returns False for questions whose pub_date
+        is in the future.
+        """
+        future_question = create_question(question_text="Future question.", days=1)
+        self.assertIs(future_question.is_published(), False)
+
+    def test_is_published_with_recent_question(self):
+        """
+        is_published() return True for questions whose pub_date
+        is equal or older than now.
+        """
+        recent_question1 = Question(question_text="Recent question.", pub_date=timezone.localtime())
+        self.assertIs(recent_question1.is_published(), True)
+        time = timezone.localtime() - datetime.timedelta(hours=0, minutes=0, seconds=1)
+        recent_question2 = Question(question_text="Recent question.", pub_date=time)
+        self.assertIs(recent_question2.is_published(), True)
+
+    def test_can_vote_with_future_question(self):
+        """
+        can_vote() return False for question whose pub_date
+        is in the future.
+        """
+        future_question = create_question(question_text="Future question.", days=1)
+        self.assertIs(future_question.can_vote(), False)
+
+    def test_can_vote_after_end_date(self):
+        """
+        can_vote() return False for question whose end_date
+        is in the past.
+        """
+        # end date pasted by 1 sec
+        ended_question = create_question(question_text="Ended question.", days=-1, seconds=-1, end_in=1)
+        self.assertIs(ended_question.can_vote(), False)
+    
+    def test_can_vote_when_now_equal_to_end_date(self):
+        """
+        can_vote() return True for question whose end_date
+        is the current present.
+        """
+        now_question = create_question(question_text="Now question.", days=-1, end_in=1)
+        self.assertIs(now_question.can_vote(), True)
+
+    def test_can_vote_before_end_date(self):
+        """
+        can_vote() return True for published question whose
+        end_date is the future.
+        """
+        question = create_question(question_text="Now question.", days=0, end_in=5)
+        self.assertIs(question.can_vote(), True)
+
+    def test_can_vote_question_without_end_date(self):
+        """
+        can_vote() return True for published question without end_date.
+        """
+        time = timezone.localtime()
+        no_end_date_question = Question(pub_date=time)
+        self.assertIs(no_end_date_question.can_vote(), True)
+        time = timezone.localtime() - datetime.timedelta(days=1, seconds=1)
+        old_question = Question(pub_date=time)
+        self.assertIs(old_question.can_vote(), True)
 
 
 class QuestionIndexViewTests(TestCase):
