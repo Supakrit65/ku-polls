@@ -11,11 +11,13 @@
 {% endfor %}
 </ul>
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
-
 {% if messages %}
 <div class="message">
     {% for message in messages %}
         <p style="color:red;">{{ message }}</p>
     {% endfor %}</div>
 {% endif %}
+
+<pre><a href="{% url 'polls:index' %}">
+<button type="button">{{"Back to List of Polls"}}</button>
+</a></pre>

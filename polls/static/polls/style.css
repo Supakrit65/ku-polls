@@ -6,3 +6,8 @@ body {
     background: white url("images/background.png") no-repeat;
     background-size: cover;
 }
+
+button {
+    background-color:#0a0a23;
+    color: #fff;
+}

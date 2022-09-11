@@ -13,3 +13,9 @@
 </fieldset>
 <input type="submit" value="Vote">
 </form>
+
+<td><a href="{% url 'polls:results' question.id %}">
+    <button type="button">{{"Results"}}</button></a></td>&emsp;
+<a href="{% url 'polls:index' %}">
+<button type="button">{{"Back to List of Polls"}}</button>
+</a></pre>
