@@ -15,9 +15,8 @@
     {% if messages %}
     <div class="message">
         {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
-        {% endfor %}
-    </div>
+            <p style="color:red; text-indent: 20px"><strong>{{ message }}</strong></p>
+        {% endfor %}</div>
     {% endif %}
     {% if latest_question_list %}
     <ul>
@@ -26,12 +25,10 @@
         <li><b><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></b></li>
         <td><a href="{% url 'polls:results' question.id %}">
             <button type="button">{{"Results"}}</button></a></td>&emsp;
-            <!-- Show the vote button if can_vote is true for each question -->
             {% if question.can_vote%}
                 <td><a href="{% url 'polls:detail' question.id %}">
                 <button type="button">{{"Vote"}}</button></a></td>
             {% endif %}
-             <!-- Show the vote button part end here -->
         </p>
     {% endfor %}
     </ul>
