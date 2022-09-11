@@ -1,13 +1,16 @@
+"""This module contains IndexView class, DetailView class, ResultsView class, and vote function."""
+
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .models import Choice, Question
 from django.contrib import messages
+from .models import Choice, Question
 
 
 class IndexView(generic.ListView):
+    """This class provides a view of index page."""
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
 
@@ -22,6 +25,7 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
+    """This class provides a view for detail page."""
     model = Question
     template_name = 'polls/detail.html'
 
@@ -32,6 +36,7 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.localtime())
 
     def get(self, request, *args, **kwargs):
+        """Redirect to pages according to the status of question."""
         try:
             self.object = get_object_or_404(Question, pk=kwargs['pk'])
         except Http404:
@@ -43,14 +48,14 @@ class DetailView(generic.DetailView):
             if not self.object.is_published():
                 messages.error(request, 'That given question is not published yet.')
                 return HttpResponseRedirect(reverse('polls:index'))
-            elif not self.object.can_vote():
+            if not self.object.can_vote():
                 messages.error(request, 'This question is closed.')
                 return HttpResponseRedirect(reverse('polls:results', args=(self.object.id,)))
-            else:
-                return super().get(request, *args, **kwargs)
+            return super().get(request, *args, **kwargs)
 
 
 class ResultsView(generic.DetailView):
+    """This class provides a view for result page."""
     model = Question
     template_name = 'polls/results.html'
 
@@ -62,6 +67,7 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+    """Handle voting"""
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
