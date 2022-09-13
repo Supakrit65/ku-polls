@@ -2,7 +2,78 @@ li a {
     color: green;
 }
 
+.header {
+  padding: 8px;
+  text-align: center;
+  background: green;
+  color: white;
+  font-size: 15px;
+}
+
 body {
     background: white url("images/background.png") no-repeat;
     background-size: cover;
+}
+
+button {
+    background-color:#0a0a23;
+    color: #fff;
+    border:none;
+    border-radius:15px;
+    text-align: center;
+}
+
+input {
+    background-color:#0a0a23;
+    color: #fff;
+    border:none;
+    border-radius:15px;
+}
+
+tab { text-indent:10px }
+
+.vote {
+  width: 250px;
+  text-align: left;
+  padding: 20px;
+}
+.vote td:nth-child(2) {
+  text-align: right;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #AFE1AF;
+}
+
+thead th:nth-child(1) {
+  width: 30%;
+}
+
+thead th:nth-child(2) {
+  width: 20%;
+}
+
+th, td {
+  padding: 20px;
+}
+
+thead th {
+  font-family: 'Rock Salt', cursive;
+}
+
+th {
+  letter-spacing: 2px;
+  border: 2px solid white;
+}
+
+td {
+  letter-spacing: 1px;
+  border: 2px solid white;
+}
+
+tbody td {
+  text-align: center;
 }
