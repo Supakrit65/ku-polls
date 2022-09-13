@@ -56,9 +56,11 @@ class Question(models.Model):
         :returns: can the question be voted.
         """
         now = timezone.localtime()
-        if not self.end_date:
-            return self.is_published()
-        return self.is_published() and now <= self.end_date
+        return (
+            self.is_published() and now <= self.end_date
+            if self.end_date
+            else self.is_published()
+        )
 
 
 class Choice(models.Model):
