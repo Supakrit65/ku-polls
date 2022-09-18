@@ -38,21 +38,33 @@ class DetailView(generic.DetailView):
 
     def get(self, request, *args, **kwargs):
         """Redirect to pages according to the status of question."""
+        user = request.user
+        self.question = None
         try:
-            self.object = get_object_or_404(Question, pk=kwargs['pk'])
+            self.question = get_object_or_404(Question, pk=kwargs['pk'])
         except Http404:
             messages.error(request, 'No such question.')
             return HttpResponseRedirect(reverse('polls:index'))
         # If someone navigates to a poll detail page when voting is not allowed,
         # redirect them to the polls index page
         else:
-            if not self.object.is_published():
+            if not self.question.is_published():
                 messages.error(request, 'That given question is not published yet.')
                 return HttpResponseRedirect(reverse('polls:index'))
-            if not self.object.can_vote():
+            if not self.question.can_vote():
                 messages.error(request, 'This question is closed.')
-                return HttpResponseRedirect(reverse('polls:results', args=(self.object.id,)))
-            return super().get(request, *args, **kwargs)
+                return HttpResponseRedirect(reverse('polls:results', args=(self.question.id,)))
+            selected_choice_info = ''
+            if not user.is_anonymous:
+                try:
+                    vote_object = Vote.objects.get(user=user, choice__in=self.question.choice_set.all())
+                    selected_choice_info = vote_object.choice.choice_text
+                except Vote.DoesNotExist:
+                    selected_choice_info = ''
+                return render(request, 'polls/detail.html',
+                              {'question': self.question, 'check_info': selected_choice_info})
+            return render(request, 'polls/detail.html',
+                          {'question': self.question, 'check_info': selected_choice_info})
 
 
 class ResultsView(generic.DetailView):

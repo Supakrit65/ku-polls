@@ -7,8 +7,13 @@
     <legend><h1>{{ question.question_text }}</h1></legend>
     {% if error_message %}<p style="color:red;"><strong>{{ error_message }}</strong></p>{% endif %}
     {% for choice in question.choice_set.all %}
-        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-        <b><label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label></b><br>
+        {% if choice.choice_text == check_info %}
+            <input type="radio" name="choice" id="selected" value="{{ choice.id }}" checked>
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+        {% else %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+        {% endif %}
     {% endfor %}
 </fieldset>
 <p style="text-indent: 30px"><input type="submit" value="Vote">
@@ -19,3 +24,9 @@
 <a href="{% url 'polls:index' %}">
 <button type="button">{{"Back to List of Polls"}}</button>
 </a>
+
+{% if user.is_anonymous %}
+        <p style="color:red;"><br>&emsp;&emsp;<b>
+            Please <a href="{% url 'login'%}?next={{request.path}}">Login</a> to vote.
+        </b></p>
+{% endif %}
