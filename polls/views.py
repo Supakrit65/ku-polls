@@ -7,6 +7,7 @@ from django.views import generic
 from django.utils import timezone
 from django.contrib import messages
 from .models import Choice, Question
+from django.contrib.auth.decorators import login_required
 
 
 class IndexView(generic.ListView):
@@ -66,6 +67,7 @@ class ResultsView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.localtime())
 
 
+@login_required
 def vote(request, question_id):
     """
     Increment a vote count for selected choice.
