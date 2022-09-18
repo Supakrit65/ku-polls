@@ -72,6 +72,7 @@ def vote(request, question_id):
     """
     Increment a vote count for selected choice.
     """
+    user = request.user
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
