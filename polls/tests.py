@@ -1,9 +1,9 @@
 import datetime
 from django.urls import reverse
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.utils import timezone
-
-from .models import Question
+from django.contrib.auth.models import User
+from .models import Question, Vote
 
 
 def create_question(question_text, days, seconds=0, end_in=0):
@@ -81,14 +81,6 @@ class QuestionModelTests(TestCase):
         ended_question = create_question(question_text="Ended question.", days=-1, seconds=-1, end_in=1)
         self.assertIs(ended_question.can_vote(), False)
 
-    def test_can_vote_when_now_equal_to_end_date(self):
-        """
-        can_vote() return True for question whose end_date
-        is the current present.
-        """
-        now_question = create_question(question_text="Now question.", days=-1, end_in=1)
-        self.assertIs(now_question.can_vote(), True)
-
     def test_can_vote_before_end_date(self):
         """
         can_vote() return True for published question whose
@@ -117,6 +109,13 @@ class QuestionModelTests(TestCase):
 
 
 class QuestionIndexViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="demo", email="demo@email.com")
+        self.user.set_password('demopass')
+        self.user.save()
+        self.client.login(username='demo', password='demopass')
+
     def test_no_questions(self):
         """
         If no questions exist, an appropriate message is displayed.
@@ -173,8 +172,21 @@ class QuestionIndexViewTests(TestCase):
             [question2, question1],
         )
 
+    def test_anyone_see_polls_list(self):
+        """Anyone can see poll index page."""
+        self.client.logout()
+        response = self.client.get(reverse('polls:index'))
+        self.assertEqual(response.status_code, 200)
+
 
 class QuestionDetailViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="demo", email="demo@email.com")
+        self.user.set_password('demopass')
+        self.user.save()
+        self.client.login(username='demo', password='demopass')
+
     def test_future_question(self):
         """
         The detail view of a question with a pub_date in the future
@@ -195,19 +207,39 @@ class QuestionDetailViewTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
 
+    def test_anyone_can_see_question_detail(self):
+        """anyone can access question detail page."""
+        self.client.logout()
+        question = create_question(question_text='Past Question.', days=-5, end_in=10)
+        url = reverse('polls:detail', args=(question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, question.question_text)
+
 
 class QuestionResultViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="demo", email="demo@email.com")
+        self.user.set_password('demopass')
+        self.user.save()
+        self.another_user = User.objects.create(username="demo1", email="demo1@email.com")
+        self.another_user.set_password('demopass1')
+        self.another_user.save()
+        self.active_question = create_question(
+            question_text='Some interesting question.', days=-2)
+        self.active_question.save()
+
     def test_vote_count_display_correctly(self):
         """
         The ResultView should display the vote count of question correctly.
         """
-        question = create_question(question_text='Some interesting question.', days=-2)
-        question.choice_set.create(choice_text="5/5", votes=0)
-        choice = question.choice_set.get(pk=1)
-        choice.votes += 2
-        question.save()
-        choice.save()
-        url = reverse("polls:results", args=(question.id,))
+        self.client.login(username='demo', password='demopass')
+        self.client.login(username='demo1', password='demopass1')
+        choice = self.active_question.choice_set.create(choice_text="5/5")
+        Vote.objects.create(choice=choice, user=self.user)
+        Vote.objects.create(choice=choice, user=self.another_user)
+        url = reverse("polls:results", args=(self.active_question.id,))
         response = self.client.get(url)
         self.assertContains(response, choice.votes)
 
@@ -220,3 +252,58 @@ class QuestionResultViewTests(TestCase):
         url = reverse('polls:results', args=(future_question.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+
+class VoteViewTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="demo", email="demo@email.com")
+        self.user.set_password('demopass')
+        self.user.save()
+        self.active_question = create_question(
+            question_text='Some interesting question.', days=-2)
+        self.choice1 = self.active_question.choice_set.create(choice_text="one")
+        self.choice2 = self.active_question.choice_set.create(choice_text="two")
+        self.active_question.save()
+
+    def test_vote_with_authenticated_user(self):
+        """Authenticated user should be able to vote."""
+        self.client.login(username='demo', password='demopass')
+        url = reverse('polls:vote', args=(self.active_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_vote_with_anonymous(self):
+        """
+        Log-in is required before voting
+        else anonymous will be redirected to login page.
+        """
+        self.client.logout()
+        url = reverse('polls:vote', args=(self.active_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_one_user_one_vote_count_per_question(self):
+        """1 user can only select one vote in a question"""
+        self.client.login(username='demo', password='demopass')
+        self.client.post(reverse('polls:vote', args=(self.active_question.id,)), {'choice': self.choice1.id})
+        self.client.post(reverse('polls:vote', args=(self.active_question.id,)), {'choice': self.choice2.id})
+        self.assertEqual(Vote.objects.all().count(), 1)
+        # user vote on the same choice
+        self.client.post(reverse('polls:vote', args=(self.active_question.id,)), {'choice': self.choice2.id})
+        self.assertEqual(Vote.objects.all().count(), 1)
+
+    def test_user_can_change_vote(self):
+        """user can change selected choice."""
+        self.client.login(username='demo', password='demopass')
+        self.client.post(reverse('polls:vote', args=(self.active_question.id,)), {'choice': self.choice1.id})
+        vote_object = Vote.objects.filter(
+            user=self.user, choice__in=self.active_question.choice_set.all()).first()
+        # check the initial selected choice.
+        self.assertEqual(vote_object.choice, self.choice1)
+        # user select new choice
+        self.client.post(reverse('polls:vote', args=(self.active_question.id,)), {'choice': self.choice2.id})
+        vote_object2 = Vote.objects.filter(
+            user=self.user, choice__in=self.active_question.choice_set.all()).first()
+        # check the second time selected choice.
+        self.assertEqual(vote_object2.choice, self.choice2)

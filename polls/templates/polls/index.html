@@ -1,6 +1,6 @@
 {% load static %}
-
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+
 <!DOCTYPE html>
 <html lang="en">
 <div class="header">
@@ -8,6 +8,9 @@
   <p><b> “The vote is precious. It is the most powerful non-violent tool we have in a democratic society, and we must use it.”
 — John Lewis</b></p>
 </div>
+
+
+
 
 <head>
     <meta charset="UTF-8">
@@ -36,4 +39,12 @@
     <p>No polls are available.</p>
     {% endif %}
 </head>
+
+{% if user.is_authenticated %}
+    <br>&emsp;<b>Welcome back, {{ user.username }}</b>
+    &emsp;<a href="{% url 'logout' %}"><button type="button">Log Out</button></a>
+{% else %}
+    <br>&emsp;<b>Please</b> <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+{% endif %}
+
 </html>
