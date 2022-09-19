@@ -4,7 +4,26 @@ with additional functionality. <br>
 This application is part of the [Individual Software Process](https://cpske.github.io/ISP) course at [Kasetsart University](https://ku.ac.th).
 
 ## How to Install and Run
-To be Done.
+Clone this repository
+```
+git clone https://github.com/Supakrit65/ku-polls.git
+```
+Go to project directory
+```
+cd ku-polls
+```
+Install items in requirement.txt
+```
+pip install -r requirements.txt
+```
+Create and modify `.env` file according to `sample.env` file.
+
+Run server by running command below
+```
+python manage.py runserver
+```
+Then, visit the following url  
+`http://127.0.0.1:8000/` or `localhost:8000/`.
 
 ## Demo Users
 | Username | password  |
