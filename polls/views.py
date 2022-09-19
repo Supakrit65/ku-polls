@@ -82,7 +82,7 @@ class ResultsView(generic.DetailView):
 @login_required
 def vote(request, question_id):
     """
-    Increment a vote count for selected choice.
+    create or update Vote object when vote occurs.
     """
     user = request.user
     question = get_object_or_404(Question, pk=question_id)
