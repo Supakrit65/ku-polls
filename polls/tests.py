@@ -81,14 +81,6 @@ class QuestionModelTests(TestCase):
         ended_question = create_question(question_text="Ended question.", days=-1, seconds=-1, end_in=1)
         self.assertIs(ended_question.can_vote(), False)
 
-    def test_can_vote_when_now_equal_to_end_date(self):
-        """
-        can_vote() return True for question whose end_date
-        is the current present.
-        """
-        now_question = create_question(question_text="Now question.", days=-1, end_in=1)
-        self.assertIs(now_question.can_vote(), True)
-
     def test_can_vote_before_end_date(self):
         """
         can_vote() return True for published question whose
