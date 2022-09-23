@@ -18,7 +18,7 @@ python -m venv env
 ```
 
 4. Then, activate the created virtual environments.  
-&nbsp;For **macOS** use this
+&nbsp;&nbsp;For **macOS** use this
 ```
 source env/bin/activate
 ```
