@@ -8,9 +8,8 @@ from django.contrib.auth.models import User
 
 
 class Question(models.Model):
-    """
-    This class represents a model of question contains choices.
-    """
+    """This class represents a model of question contains choices."""
+
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     end_date = models.DateTimeField('date ended', null=True, blank=True)
@@ -66,6 +65,7 @@ class Question(models.Model):
 
 class Choice(models.Model):
     """This class has a ForeignKey as a Question."""
+
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
 
@@ -80,11 +80,13 @@ class Choice(models.Model):
 
     @property
     def votes(self):
+        """Return vote count in certain choice."""
         return Vote.objects.filter(choice=self).count()
 
 
 class Vote(models.Model):
     """Model for votes of question."""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
 

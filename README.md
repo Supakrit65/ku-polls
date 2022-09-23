@@ -4,26 +4,56 @@ with additional functionality. <br>
 This application is part of the [Individual Software Process](https://cpske.github.io/ISP) course at [Kasetsart University](https://ku.ac.th).
 
 ## How to Install and Run
-Clone this repository
+1. Clone this repository
 ```
 git clone https://github.com/Supakrit65/ku-polls.git
 ```
-Go to project directory
+2. Go to project directory
 ```
 cd ku-polls
 ```
-Install items in requirement.txt
+3. Create virtual environments using following commands.  
+```
+python -m venv env
+```
+
+4. Then, activate the created virtual environments.  
+&nbsp;For **macOS/Linux** use this:
+```
+. env/bin/activate
+```
+&ensp;&ensp;&ensp;&ensp;For **Windows** use this:
+```
+. env/Scripts/activate
+```
+5. Install items in requirements.txt using command below.  
 ```
 pip install -r requirements.txt
 ```
-Create and modify `.env` file according to `sample.env` file.
 
-Run server by running command below
+**Note that to exit** the virtualenv, type `deactivate`, or close the terminal window.
+
+6. Create `.env` file in the project directory.  
+Then copy contents in `sample.env` and paste them in `.env` file.  
+**Note** that you can generate your **secret key** [here](https://djecrety.ir).
+ 
+7. Next, **create** database and **load** the data by using these commands.
+```
+python manage.py migrate
+python manage.py loaddata data/polls.json data/users.json
+```
+8. Run server by running command below.
 ```
 python manage.py runserver
 ```
-Then, visit the following url  
+9. Then, visit the following url.  
 `http://127.0.0.1:8000/` or `localhost:8000/`.
+
+
+## Demo Admin
+| Username | password      |
+|----------|---------------|
+| admin65  | controller11  |
 
 ## Demo Users
 | Username | password  |
