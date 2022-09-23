@@ -18,11 +18,11 @@ python -m venv env
 ```
 
 4. Then, activate the created virtual environments.  
-For **macOS** us this
+For **macOS** use this
 ```
 source env/bin/activate
 ```
-For **Windows** us this
+&ensp;&ensp;&ensp;&ensp;For **Windows** use this
 ```
 . env/Scripts/activate
 ```
