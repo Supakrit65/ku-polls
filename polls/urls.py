@@ -1,3 +1,5 @@
+"""This module contains url patterns for poll app."""
+
 from django.urls import path
 
 from . import views
