@@ -18,7 +18,7 @@ python -m venv env
 ```
 
 4. Then, activate the created virtual environments.  
-For **macOS** use this
+&nbsp;For **macOS** use this
 ```
 source env/bin/activate
 ```
@@ -26,7 +26,7 @@ source env/bin/activate
 ```
 . env/Scripts/activate
 ```
-5. Install items in requirement.txt using command below.  
+5. Install items in requirements.txt using command below.  
 ```
 pip install -r requirements.txt
 ```
