@@ -18,11 +18,11 @@ python -m venv env
 ```
 
 4. Then, activate the created virtual environments.  
-&nbsp;&nbsp;For **macOS** use this
+&nbsp;For **macOS** use this:
 ```
 source env/bin/activate
 ```
-&ensp;&ensp;&ensp;&ensp;For **Windows** use this
+&ensp;&ensp;&ensp;&ensp;For **Windows** use this:
 ```
 . env/Scripts/activate
 ```
@@ -42,11 +42,11 @@ Then copy contents in `sample.env` and paste them in `.env` file.
 python manage.py migrate
 python manage.py loaddata data/polls.json data/users.json
 ```
-8. Run server by running command below
+8. Run server by running command below.
 ```
 python manage.py runserver
 ```
-9. Then, visit the following url  
+9. Then, visit the following url.  
 `http://127.0.0.1:8000/` or `localhost:8000/`.
 
 
