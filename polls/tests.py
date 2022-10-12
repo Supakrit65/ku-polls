@@ -243,6 +243,22 @@ class QuestionDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, question.question_text)
 
+    def test_question_does_not_exist_redirect_index(self):
+        """When try to get not existed question, redirect to index pages."""
+        # get none existed question
+        url = reverse('polls:detail', args=(65,))
+        response = self.client.get(url)
+        # check redirect to main
+        self.assertEqual(response.status_code, 302)
+
+    def test_closed_question_redirect_to_result(self):
+        """If question is closed, redirect to result pages."""
+        past_question = create_question(
+            question_text='Past Question.', days=-10, end_in=2)
+        url = reverse('polls:detail', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
 
 class QuestionResultViewTests(TestCase):
     """This class contains test for Result view and behaviour."""
