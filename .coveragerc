@@ -8,8 +8,6 @@ omit =
     polls/admin.py
     polls/tests.py
     polls/migrations/*
-    polls/urls.py
-    polls/apps.py
     manage.py
 
 [report]
