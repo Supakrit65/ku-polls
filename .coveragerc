@@ -11,3 +11,7 @@ omit =
     polls/urls.py
     polls/apps.py
     manage.py
+
+[report]
+exclude_lines =
+    def __str__
